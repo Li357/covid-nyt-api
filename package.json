@@ -1,0 +1,12 @@
+{
+  "name": "covid-nyt-api",
+  "version": "1.0.0",
+  "description": "NYT's COVID-19 data for the United States as a GraphQL service",
+  "repository": "https://github.com/li357/covid-nyt-api.git",
+  "author": "Andrew Li",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.11.0",
+    "graphql": "^14.6.0"
+  }
+}
