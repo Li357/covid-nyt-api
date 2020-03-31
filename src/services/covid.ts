@@ -6,7 +6,7 @@ import descSort from '../util/descSort';
 
 // custom caching to prevent reparsing every request
 const REPOSITORY_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master';
-const MAX_AGE = 1000 * 60 * 5; // refresh data from NYT every 5 hours
+const MAX_AGE = 1000 * 60 * 1; // refresh data from NYT every 1 hour
 
 async function parseDataset(dataset: string): Promise<string[][]> {
   const res = await fetch(`${REPOSITORY_URL}/${dataset}`);
@@ -66,10 +66,10 @@ export async function getTimeline(fips: string): Promise<RegionData[]> {
 
 export async function getCurrentCases(fips: string): Promise<number> {
   const timeline = await getTimeline(fips);
-  return timeline.length > 0 ? timeline[timeline.length - 1].cases : 0;
+  return timeline.length > 0 ? timeline[0].cases : 0;
 }
 
 export async function getCurrentDeaths(fips: string): Promise<number> {
   const timeline = await getTimeline(fips);
-  return timeline.length > 0 ? timeline[timeline.length - 1].deaths : 0;
+  return timeline.length > 0 ? timeline[0].deaths : 0;
 }

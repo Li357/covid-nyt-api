@@ -22,7 +22,7 @@ export async function getByCounty(stateFips: string, countyFips: string): Promis
   const [, ...data]: RawCountyPopulation[] = await response.json();
   return data.map(([name, population, stateFips, countyFips]) => ({
     fips: `${stateFips}${countyFips}`,
-    name,
+    name: name.split(', ')[0], // format from Census API is County, State
     population: Number(population),
   }));
 }
