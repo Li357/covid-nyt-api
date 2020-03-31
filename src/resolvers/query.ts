@@ -1,7 +1,7 @@
 import { IResolverObject } from 'apollo-server-micro';
 import { RegionArgs, Context } from '../types';
 
-const rootResolvers: IResolverObject<any, Context, RegionArgs> = {
+const rootResolvers: IResolverObject<undefined, Context, RegionArgs> = {
   async states(_root, { fips }, { population }) {
     return fips ? population.getByState(fips) : population.getAllStates();
   },

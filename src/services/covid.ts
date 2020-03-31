@@ -48,7 +48,7 @@ function convertCountyDataToPairs(countyData: RawCountyData[]): [string, RegionD
   return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
 }
 
-export const getData = memoize(async function getData(): Promise<Map<string, RegionData[]>> {
+async function getCOVIDData(): Promise<Map<string, RegionData[]>> {
   const stateData = (await parseDataset('us-states.csv')) as RawStateData[];
   const countyData = (await parseDataset('us-counties.csv')) as RawCountyData[];
 
@@ -56,7 +56,8 @@ export const getData = memoize(async function getData(): Promise<Map<string, Reg
   const countyKeyValuePairs = convertCountyDataToPairs(countyData);
 
   return new Map([...stateKeyValuePairs, ...countyKeyValuePairs]);
-}, MAX_AGE);
+}
+export const getData = memoize(getCOVIDData, MAX_AGE);
 
 export async function getTimeline(fips: string): Promise<RegionData[]> {
   const [data] = await getData();

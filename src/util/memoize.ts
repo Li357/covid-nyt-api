@@ -1,5 +1,5 @@
 // naive memoization for data fetching
-export default function memoize<R>(func: () => Promise<R>, maxAge: number) {
+export default function memoize<R>(func: () => Promise<R>, maxAge: number): () => Promise<[R, Date]> {
   let lastUpdate: Date = null;
   let lastReturnValue: R = null;
 
