@@ -2,6 +2,7 @@ import { fetch } from 'apollo-server-env';
 import parse from 'csv-parse/lib/sync';
 import { RegionData, RawStateData, RawCountyData } from '../types';
 import memoize from '../util/memoize';
+import descSort from '../util/descSort';
 
 // custom caching to prevent reparsing every request
 const REPOSITORY_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master';
@@ -27,7 +28,7 @@ function convertStateDataToPairs(stateData: RawStateData[]): [string, RegionData
     grouped[fips].push(totals);
     return grouped;
   }, {});
-  return Object.keys(grouped).map((fips) => [fips, grouped[fips]]);
+  return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
 }
 
 function convertCountyDataToPairs(countyData: RawCountyData[]): [string, RegionData[]][] {
@@ -41,10 +42,10 @@ function convertCountyDataToPairs(countyData: RawCountyData[]): [string, RegionD
       cases: Number(cases),
       deaths: Number(deaths),
     };
-    grouped[fips] = totals;
+    grouped[fips].push(totals);
     return grouped;
   }, {});
-  return Object.keys(grouped).map((fips) => [fips, grouped[fips]]);
+  return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
 }
 
 export const getData = memoize(async function getData(): Promise<Map<string, RegionData[]>> {
@@ -57,17 +58,17 @@ export const getData = memoize(async function getData(): Promise<Map<string, Reg
   return new Map([...stateKeyValuePairs, ...countyKeyValuePairs]);
 }, MAX_AGE);
 
-export async function getTimeline(fips: string) {
+export async function getTimeline(fips: string): Promise<RegionData[]> {
   const [data] = await getData();
   return data.has(fips) ? data.get(fips) : [];
 }
 
-export async function getCurrentCases(fips: string) {
+export async function getCurrentCases(fips: string): Promise<number> {
   const timeline = await getTimeline(fips);
   return timeline.length > 0 ? timeline[timeline.length - 1].cases : 0;
 }
 
-export async function getCurrentDeaths(fips: string) {
+export async function getCurrentDeaths(fips: string): Promise<number> {
   const timeline = await getTimeline(fips);
   return timeline.length > 0 ? timeline[timeline.length - 1].deaths : 0;
 }

@@ -16,4 +16,5 @@ const regionResolvers: IResolverObject<Population, Context> = {
     return lastUpdated.toISOString();
   },
 };
+
 export default regionResolvers;

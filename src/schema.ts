@@ -29,7 +29,7 @@ export default gql`
   }
 
   type Query {
-    states: [State!]!
-    counties: [County!]!
+    states(fips: ID): [State!]!
+    counties(fips: ID): [County!]!
   }
 `;
