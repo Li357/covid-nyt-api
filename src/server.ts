@@ -8,6 +8,8 @@ import * as covid from './services/covid';
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  playground: true,
+  introspection: true,
   context: async (): Promise<Context> => {
     await covid.getData();
     return { population, covid };

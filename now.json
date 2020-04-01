@@ -1,15 +1,10 @@
 {
   "version": 2,
-  "routes": [
+  "public": true,
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "headers": { "Access-Control-Allow-Origin": "*" },
-      "continue": true
-    },
-    {
-      "src": "/graphql",
-      "methods": ["POST"],
-      "dest": "/api/graphql.ts"
+      "source": "/(.*)",
+      "destination": "/api/graphql.ts"
     }
   ]
 }
