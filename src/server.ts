@@ -1,4 +1,5 @@
 import { ApolloServer } from 'apollo-server-micro';
+import responseCachePlugin from 'apollo-server-plugin-response-cache';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 import { Context } from './types';
@@ -14,6 +15,10 @@ const server = new ApolloServer({
     await covid.getData();
     return { population, covid };
   },
+  cacheControl: {
+    defaultMaxAge: 60 * 60, // cache for one hour
+  },
+  plugins: [responseCachePlugin()],
 });
 
 export default server;
