@@ -7,6 +7,16 @@ export default gql`
     deaths: Int!
   }
 
+  type Nation {
+    fips: ID!
+    name: String!
+    population: Int!
+    cases: Int!
+    deaths: Int!
+    timeline: [DayTotal!]!
+    lastUpdated: String!
+  }
+
   type State {
     fips: ID!
     name: String!
@@ -31,5 +41,6 @@ export default gql`
   type Query {
     states(fips: ID): [State!]!
     counties(fips: ID): [County!]!
+    nation: Nation!
   }
 `;

@@ -8,6 +8,7 @@ The New York Times' [COVID-19 data](https://github.com/nytimes/covid-19-data) fo
 type Query {
   states(fips: ID): [State!]!    # get all states or a specific by FIPS
   counties(fips: ID): [County!]! # get all counties or a specific by FIPS
+  nation: Nation!                # aggregate data on entire US (includes US territories)
 }
 
 type State {
@@ -22,6 +23,16 @@ type State {
 }
 
 type County {
+  fips: ID!
+  name: String!
+  population: Int!
+  cases: Int!
+  deaths: Int!
+  timeline: [DayTotal!]!
+  lastUpdated: String!
+}
+
+type Nation {
   fips: ID!
   name: String!
   population: Int!
@@ -61,8 +72,8 @@ Response:
   "data": {
     "counties": [
       {
-        "name": "Douglas County, Nebraska",
-        "cases": 10,
+        "name": "Douglas County",
+        "cases": 79,
         "deaths": 0,
         "timeline": [
           {
@@ -74,8 +85,7 @@ Response:
             "date": "2020-03-28T00:00:00.000Z",
             "cases": 74,
             "deaths": 1
-          },
-          // ...
+          }
         ]
       }
     ]

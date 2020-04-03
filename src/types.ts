@@ -11,8 +11,12 @@ export interface Population {
 
 // From the NYT COVID datasets
 
-export type RawStateData = [string, string, string, string, string]; // date, state, fips, case, deaths
-export type RawCountyData = [string, string, string, string, string, string]; // date, state, county, fips, case, deaths
+export interface RawData {
+  date: string;
+  fips: string;
+  cases: string;
+  deaths: string;
+}
 
 export interface RegionData {
   date: Date;

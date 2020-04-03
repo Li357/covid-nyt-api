@@ -12,9 +12,10 @@
     "@types/micro-cors": "^0.1.0",
     "apollo-server-micro": "^2.11.0",
     "apollo-server-plugin-response-cache": "^0.4.0",
-    "csv-parse": "^4.8.8",
+    "csv-parser": "^2.3.2",
     "graphql": "^14.6.0",
-    "micro-cors": "^0.1.1"
+    "micro-cors": "^0.1.1",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.26.0",

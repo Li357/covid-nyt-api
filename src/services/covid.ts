@@ -1,6 +1,6 @@
-import { fetch } from 'apollo-server-env';
-import parse from 'csv-parse/lib/sync';
-import { RegionData, RawStateData, RawCountyData } from '../types';
+import fetch from 'node-fetch';
+import csv from 'csv-parser';
+import { RegionData, RawData } from '../types';
 import memoize from '../util/memoize';
 import descSort from '../util/descSort';
 
@@ -8,14 +8,26 @@ import descSort from '../util/descSort';
 const REPOSITORY_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master';
 const MAX_AGE = 1000 * 60 * 1; // refresh data from NYT every 1 hour
 
-async function parseDataset(dataset: string): Promise<string[][]> {
+export const NATIONAL_DATA_KEY = 'NATION';
+
+async function parseDataset(dataset: string): Promise<RawData[]> {
   const res = await fetch(`${REPOSITORY_URL}/${dataset}`);
-  const text = await res.text();
-  return parse(text).slice(1); // first row is column names
+  return new Promise((resolve, reject) => {
+    const data = [];
+    res.body
+      .pipe(csv())
+      .on('data', (chunk) => {
+        data.push(chunk);
+      })
+      .on('end', () => {
+        resolve(data);
+      })
+      .on('error', reject);
+  });
 }
 
-function convertStateDataToPairs(stateData: RawStateData[]): [string, RegionData[]][] {
-  const grouped = stateData.reduce((grouped, [date, _state, fips, cases, deaths]) => {
+function processDataset(stateData: RawData[]): [string, RegionData[]][] {
+  const grouped = stateData.reduce((grouped, { date, fips, cases, deaths }) => {
     if (!grouped[fips]) {
       grouped[fips] = [];
     }
@@ -28,34 +40,34 @@ function convertStateDataToPairs(stateData: RawStateData[]): [string, RegionData
     grouped[fips].push(totals);
     return grouped;
   }, {});
-  return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
-}
 
-function convertCountyDataToPairs(countyData: RawCountyData[]): [string, RegionData[]][] {
-  const grouped = countyData.reduce((grouped, [date, _state, _county, fips, cases, deaths]) => {
-    if (!grouped[fips]) {
-      grouped[fips] = [];
-    }
-
-    const totals = {
-      date: new Date(`${date}T00:00Z`).toISOString(),
-      cases: Number(cases),
-      deaths: Number(deaths),
-    };
-    grouped[fips].push(totals);
-    return grouped;
-  }, {});
   return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
 }
 
 async function getCOVIDData(): Promise<Map<string, RegionData[]>> {
-  const stateData = (await parseDataset('us-states.csv')) as RawStateData[];
-  const countyData = (await parseDataset('us-counties.csv')) as RawCountyData[];
+  const stateData = (await parseDataset('us-states.csv')) as RawData[];
+  const countyData = (await parseDataset('us-counties.csv')) as RawData[];
 
-  const stateKeyValuePairs = convertStateDataToPairs(stateData);
-  const countyKeyValuePairs = convertCountyDataToPairs(countyData);
+  const statePairs = processDataset(stateData);
+  const countyPairs = processDataset(countyData);
 
-  return new Map([...stateKeyValuePairs, ...countyKeyValuePairs]);
+  const nationData = stateData.reduce((timeline, state) => {
+    if (!timeline[state.date]) {
+      timeline[state.date] = { cases: 0, deaths: 0 };
+    }
+    timeline[state.date].cases += Number(state.cases);
+    timeline[state.date].deaths += Number(state.deaths);
+    return timeline;
+  }, {});
+  const nationTimeline = descSort(
+    Object.keys(nationData).map((date) => ({
+      date: new Date(`${date}T00:00Z`).toISOString(),
+      ...nationData[date],
+    })),
+    'date',
+  );
+
+  return new Map([...statePairs, ...countyPairs, [NATIONAL_DATA_KEY, nationTimeline]]);
 }
 export const getData = memoize(getCOVIDData, MAX_AGE);
 
