@@ -19,7 +19,7 @@ export interface RawData {
 }
 
 export interface RegionData {
-  date: Date;
+  date: string; // ISO string
   cases: number;
   deaths: number;
 }

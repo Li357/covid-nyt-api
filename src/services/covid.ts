@@ -13,7 +13,7 @@ export const NATIONAL_DATA_KEY = 'NATION';
 async function parseDataset(dataset: string): Promise<RawData[]> {
   const res = await fetch(`${REPOSITORY_URL}/${dataset}`);
   return new Promise((resolve, reject) => {
-    const data = [];
+    const data: RawData[] = [];
     res.body
       .pipe(csv())
       .on('data', (chunk) => {
@@ -27,7 +27,7 @@ async function parseDataset(dataset: string): Promise<RawData[]> {
 }
 
 function processDataset(stateData: RawData[]): [string, RegionData[]][] {
-  const grouped = stateData.reduce((grouped, { date, fips, cases, deaths }) => {
+  const grouped = stateData.reduce((grouped: Record<string, RegionData[]>, { date, fips, cases, deaths }) => {
     if (!grouped[fips]) {
       grouped[fips] = [];
     }
@@ -51,7 +51,7 @@ async function getCOVIDData(): Promise<Map<string, RegionData[]>> {
   const statePairs = processDataset(stateData);
   const countyPairs = processDataset(countyData);
 
-  const nationData = stateData.reduce((timeline, state) => {
+  const nationData = stateData.reduce((timeline: Record<string, Omit<RegionData, 'date'>>, state) => {
     if (!timeline[state.date]) {
       timeline[state.date] = { cases: 0, deaths: 0 };
     }
@@ -73,7 +73,7 @@ export const getData = memoize(getCOVIDData, MAX_AGE);
 
 export async function getTimeline(fips: string): Promise<RegionData[]> {
   const [data] = await getData();
-  return data.has(fips) ? data.get(fips) : [];
+  return data.has(fips) ? data.get(fips)! : []; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 }
 
 export async function getCurrentCases(fips: string): Promise<number> {

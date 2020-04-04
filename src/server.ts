@@ -11,8 +11,8 @@ const server = new ApolloServer({
   resolvers,
   playground: true,
   introspection: true,
-  context: async (): Promise<Context> => {
-    await covid.getData();
+  context: (): Context => {
+    covid.getData();
     return { population, covid };
   },
   cacheControl: {
