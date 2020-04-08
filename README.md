@@ -19,7 +19,6 @@ type State {
   deaths: Int!                   # COVID-19 deaths from NYT's data
   counties: [County!]!           # list of counties of state
   timeline: [DayTotal!]!         # descending time series COVID data from NYT
-  lastUpdated: String!           # ISO string of when cached data was updated
 }
 
 type County {
@@ -29,7 +28,6 @@ type County {
   cases: Int!
   deaths: Int!
   timeline: [DayTotal!]!
-  lastUpdated: String!
 }
 
 type Nation {
@@ -39,7 +37,6 @@ type Nation {
   cases: Int!
   deaths: Int!
   timeline: [DayTotal!]!
-  lastUpdated: String!
 }
 
 type DayTotal {

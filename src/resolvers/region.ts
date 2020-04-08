@@ -11,10 +11,6 @@ const regionResolvers: IResolverObject<Population, Context> = {
   async timeline(parent, _args, { covid }) {
     return covid.getTimeline(parent.fips);
   },
-  async lastUpdated(_parent, _args, { covid }) {
-    const [, lastUpdated] = await covid.getData();
-    return lastUpdated;
-  },
 };
 
 export default regionResolvers;

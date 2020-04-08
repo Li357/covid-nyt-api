@@ -6,7 +6,6 @@ import descSort from '../util/descSort';
 
 // custom caching to prevent reparsing every request
 const REPOSITORY_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master';
-const COMMITS_URL = 'https://api.github.com/repos/nytimes/covid-19-data/commits/master';
 const MAX_AGE = 1000 * 60 * 1; // refresh data from NYT every 1 hour
 
 export const NATIONAL_DATA_KEY = 'NATION';
@@ -45,7 +44,7 @@ function processDataset(stateData: RawData[]): [string, RegionData[]][] {
   return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
 }
 
-async function getCOVIDData(): Promise<[Map<string, RegionData[]>, Date]> {
+async function getCOVIDData(): Promise<Map<string, RegionData[]>> {
   const stateData = (await parseDataset('us-states.csv')) as RawData[];
   const countyData = (await parseDataset('us-counties.csv')) as RawData[];
 
@@ -68,20 +67,12 @@ async function getCOVIDData(): Promise<[Map<string, RegionData[]>, Date]> {
     'date',
   );
 
-  const commitsRes = await fetch(COMMITS_URL, {
-    headers: {
-      Authorization: `token ${process.env.GITHUB_API_KEY}`,
-    },
-  });
-  const commits = await commitsRes.json();
-  const { date: lastUpdated } = commits.commit.author;
-
-  return [new Map([...statePairs, ...countyPairs, [NATIONAL_DATA_KEY, nationTimeline]]), lastUpdated];
+  return new Map([...statePairs, ...countyPairs, [NATIONAL_DATA_KEY, nationTimeline]]);
 }
 export const getData = memoize(getCOVIDData, MAX_AGE);
 
 export async function getTimeline(fips: string): Promise<RegionData[]> {
-  const [data] = await getData();
+  const data = await getData();
   return data.has(fips) ? data.get(fips)! : []; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 }
 

@@ -14,7 +14,6 @@ export default gql`
     cases: Int!
     deaths: Int!
     timeline: [DayTotal!]!
-    lastUpdated: String!
   }
 
   type State {
@@ -25,7 +24,6 @@ export default gql`
     deaths: Int!
     counties: [County!]!
     timeline: [DayTotal!]!
-    lastUpdated: String!
   }
 
   type County {
@@ -35,7 +33,6 @@ export default gql`
     cases: Int!
     deaths: Int!
     timeline: [DayTotal!]!
-    lastUpdated: String!
   }
 
   type Query {
