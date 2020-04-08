@@ -13,7 +13,7 @@ const regionResolvers: IResolverObject<Population, Context> = {
   },
   async lastUpdated(_parent, _args, { covid }) {
     const [, lastUpdated] = await covid.getData();
-    return lastUpdated.toISOString();
+    return lastUpdated;
   },
 };
 

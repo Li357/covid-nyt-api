@@ -6,5 +6,8 @@
       "source": "/(.*)",
       "destination": "/api/graphql.ts"
     }
-  ]
+  ],
+  "env": {
+    "GITHUB_API_KEY": "@github-api-key"
+  }
 }
