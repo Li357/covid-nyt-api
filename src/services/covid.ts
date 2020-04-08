@@ -33,7 +33,7 @@ function processDataset(stateData: RawData[]): [string, RegionData[]][] {
     }
 
     const totals = {
-      date: new Date(`${date}T00:00`).toISOString(),
+      date: `${date}T00:00`,
       cases: Number(cases),
       deaths: Number(deaths),
     };
@@ -61,7 +61,7 @@ async function getCOVIDData(): Promise<Map<string, RegionData[]>> {
   }, {});
   const nationTimeline = descSort(
     Object.keys(nationData).map((date) => ({
-      date: new Date(`${date}T00:00`).toISOString(),
+      date: `${date}T00:00`,
       ...nationData[date],
     })),
     'date',
