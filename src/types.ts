@@ -28,6 +28,10 @@ export interface RegionArgs {
   fips?: string;
 }
 
+export interface TimelineArgs {
+  limit?: number;
+}
+
 export interface Context {
   population: typeof import('./services/population');
   covid: typeof import('./services/covid');

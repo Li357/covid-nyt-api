@@ -13,7 +13,7 @@ export default gql`
     population: Int!
     cases: Int!
     deaths: Int!
-    timeline: [DayTotal!]!
+    timeline(limit: Int): [DayTotal!]!
   }
 
   type State {
@@ -23,7 +23,7 @@ export default gql`
     cases: Int!
     deaths: Int!
     counties: [County!]!
-    timeline: [DayTotal!]!
+    timeline(limit: Int): [DayTotal!]!
   }
 
   type County {
@@ -32,7 +32,7 @@ export default gql`
     population: Int!
     cases: Int!
     deaths: Int!
-    timeline: [DayTotal!]!
+    timeline(limit: Int): [DayTotal!]!
   }
 
   type Query {

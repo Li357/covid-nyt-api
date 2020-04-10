@@ -6,19 +6,19 @@ The New York Times' [COVID-19 data](https://github.com/nytimes/covid-19-data) fo
 
 ```graphql
 type Query {
-  states(fips: ID): [State!]!    # get all states or a specific by FIPS
-  counties(fips: ID): [County!]! # get all counties or a specific by FIPS
-  nation: Nation!                # aggregate data on entire US (includes US territories)
+  states(fips: ID): [State!]!        # get all states or a specific by FIPS
+  counties(fips: ID): [County!]!     # get all counties or a specific by FIPS
+  nation: Nation!                    # aggregate data on entire US (includes US territories)
 }
 
 type State {
   fips: ID!
   name: String!
-  population: Int!               # population from US Census 2019 estimates
-  cases: Int!                    # COVID-19 cases from NYT's data
-  deaths: Int!                   # COVID-19 deaths from NYT's data
-  counties: [County!]!           # list of counties of state
-  timeline: [DayTotal!]!         # descending time series COVID data from NYT
+  population: Int!                   # population from US Census 2019 estimates
+  cases: Int!                        # COVID-19 cases from NYT's data
+  deaths: Int!                       # COVID-19 deaths from NYT's data
+  counties: [County!]!               # list of counties of state
+  timeline(limit: Int): [DayTotal!]! # descending time series COVID data from NYT
 }
 
 type County {
@@ -27,7 +27,7 @@ type County {
   population: Int!
   cases: Int!
   deaths: Int!
-  timeline: [DayTotal!]!
+  timeline(limit: Int): [DayTotal!]!
 }
 
 type Nation {
@@ -36,7 +36,7 @@ type Nation {
   population: Int!
   cases: Int!
   deaths: Int!
-  timeline: [DayTotal!]!
+  timeline(limit: Int): [DayTotal!]!
 }
 
 type DayTotal {
