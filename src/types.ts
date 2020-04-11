@@ -16,6 +16,8 @@ export interface RawData {
   fips: string;
   cases: string;
   deaths: string;
+  state: string;
+  county?: string;
 }
 
 export interface RegionData {
