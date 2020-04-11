@@ -27,7 +27,22 @@ async function parseDataset(dataset: string): Promise<RawData[]> {
 }
 
 function processDataset(stateData: RawData[]): [string, RegionData[]][] {
-  const grouped = stateData.reduce((grouped: Record<string, RegionData[]>, { date, fips, cases, deaths }) => {
+  const kansasCityData: RegionData[] = [];
+
+  const grouped = stateData.reduce((grouped: Record<string, RegionData[]>, { date, fips, cases, deaths, county }) => {
+    if (!fips && county) {
+      // https://github.com/nytimes/covid-19-data#geographic-exceptions
+      if (county === 'New York City') {
+        // assign New York City's case count wholly to New York County (FIPS 36061)
+        // that includes New York County (36061), Kings (36047), Queens (36081), Bronx (36005), Richmond (36085)
+        fips = '36061';
+      } else if (county === 'Kansas City') {
+        // although Kansas City encompasses Cass, Clay, Jackson and Platte counties, it is reported on its own line
+        kansasCityData.push({ date: `${date}T00:00`, cases: Number(cases), deaths: Number(deaths) });
+        return grouped;
+      }
+    }
+
     if (!grouped[fips]) {
       grouped[fips] = [];
     }
@@ -40,6 +55,16 @@ function processDataset(stateData: RawData[]): [string, RegionData[]][] {
     grouped[fips].push(totals);
     return grouped;
   }, {});
+
+  // assign Kansas City's case county wholly to Jackson County, Missouri (FIPS 29095)
+  kansasCityData.forEach((totals) => {
+    grouped['29095'] = grouped['29095'].map((currTotal) => {
+      if (currTotal.date === totals.date) {
+        return { ...currTotal, cases: totals.cases + currTotal.cases, deaths: totals.deaths + currTotal.deaths };
+      }
+      return currTotal;
+    });
+  });
 
   return Object.keys(grouped).map((fips) => [fips, descSort(grouped[fips], 'date')]);
 }

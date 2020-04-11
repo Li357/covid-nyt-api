@@ -46,6 +46,10 @@ type DayTotal {
 }
 ```
 
+## Geographic Exceptions
+
+In accordance with [the New York Times' geographic exceptions](https://github.com/nytimes/covid-19-data), the API handles New York City and Kansas City differently. All cases/deaths in New York City (encompassing New York, Kings, Queens, Bronx and Richmond counties) are reported under New York County (FIPS 36061). Kansas City's cases/deaths (encompassing Cass, Clay, Jackson, and Platte counties) are reported wholly in Jackson County by adding Kansas City's numbers to Jackson County's numbers.
+
 ## Example
 
 ```graphql
